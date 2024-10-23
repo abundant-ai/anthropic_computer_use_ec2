@@ -1,1 +1,7 @@
 .DS_Store
+.env
+.envrc
+.venv
+__pycache__
+*.log
+*/user_data.sh

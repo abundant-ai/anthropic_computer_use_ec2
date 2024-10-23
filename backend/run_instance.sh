@@ -1,10 +1,18 @@
 #!/bin/bash
 
 # Set AWS configuration variables
-AWS_REGION="us-east-1" # you might want to change this
-INSTANCE_TYPE="t3.medium" # you might want to change this
-KEY_NAME="your-keypair-name" # you will want to change this
-SECURITY_GROUP_ID="your-sg-goes-here"
+AWS_REGION="${AWS_REGION:-us-east-1}"       # Load from environment or fall back to us-east-1
+INSTANCE_TYPE="${INSTANCE_TYPE:-t3.medium}" # Load from environment or fall back to t3.medium
+
+if [ -z "${KEY_NAME}" ]; then
+    echo "Error: KEY_NAME environment variable is not set"
+    exit 1
+fi
+
+if [ -z "${SECURITY_GROUP_ID}" ]; then
+    echo "Error: SECURITY_GROUP_ID environment variable is not set"
+    exit 1
+fi
 
 # Parse command line arguments
 # -f flag enables force run mode which will actually launch the instance
@@ -162,12 +170,8 @@ if [ "$FORCE_RUN" = true ]; then
     PUBLIC_IP=$(echo "$INSTANCE_DETAILS" | jq -r '.Reservations[0].Instances[0].PublicIpAddress')
     PUBLIC_DNS=$(echo "$INSTANCE_DETAILS" | jq -r '.Reservations[0].Instances[0].PublicDnsName')
 
-    # Output instance access information
-    echo "Instance is now running."
-    echo "Public IP: $PUBLIC_IP"
-    echo "Public DNS: $PUBLIC_DNS"
-    echo "You can access the Computer Use Demo at: http://$PUBLIC_IP:8080"
-    echo "SSH command: ssh -i \"~/abundant/meji_aws_login.pem\" ec2-user@$PUBLIC_DNS"
+    # Output instance details as JSON
+    echo "{\"InstanceId\": \"$INSTANCE_ID\", \"PublicIpAddress\": \"$PUBLIC_IP\", \"PublicDnsName\": \"$PUBLIC_DNS\"}"
 else
     # Perform a dry run if force run is not enabled
     echo "Performing dry run..."

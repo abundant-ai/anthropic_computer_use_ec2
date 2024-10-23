@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# Set your variables
-SECURITY_GROUP_ID="your-sg-goes-here"
+# Read security group ID from environment variable
+if [ -z "${SECURITY_GROUP_ID}" ]; then
+    echo "Error: SECURITY_GROUP_ID environment variable is not set"
+    exit 1
+fi
+
 AWS_REGION="us-east-1"
 
 # Array of ports to open
